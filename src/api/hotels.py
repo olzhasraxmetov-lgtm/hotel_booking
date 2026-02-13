@@ -2,7 +2,7 @@ from fastapi import  Query, APIRouter, Body
 from src.schemas.hotels import Hotel, HotelPATCH
 from src.api.dependencies import PaginationDep
 from src.database import async_session_maker
-from src.models.hotels import HotelsORM
+from src.schemas.hotels import Hotel
 from src.repositories.hotels import HotelsRepository
 router = APIRouter(
     prefix="/hotels",
@@ -50,11 +50,10 @@ async def create_hotel(
 })
 ):
     async with async_session_maker() as session:
-        add_hotel_stmt = insert(HotelsORM).values(**hotel_data.model_dump())
-        await session.execute(add_hotel_stmt)
+        hotel = await HotelsRepository(session).add(hotel_data)
         await session.commit()
 
-    return {"success": "ok:"}
+    return {"success": "ok:", "data": hotel}
 
 @router.put("/{hotel_id}", summary='Полностью обновить отель')
 async def update_hotel(
