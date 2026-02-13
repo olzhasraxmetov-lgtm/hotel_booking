@@ -1,7 +1,7 @@
 from fastapi import  Query, APIRouter, Body
 from src.schemas.hotels import Hotel, HotelPATCH
 from src.api.dependencies import PaginationDep
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from src.database import async_session_maker
 from src.models.hotels import HotelsORM
 router = APIRouter(
@@ -9,34 +9,27 @@ router = APIRouter(
     tags=["Отели"]
 )
 
-hotels = [
-    {"id": 1, "title": "Sochi", "name": "sochi"},
-    {"id": 2, "title": "Дубай", "name": "dubai"},
-    {"id": 3, "title": "Мальдивы", "name": "maldivi"},
-    {"id": 4, "title": "Геленджик", "name": "gelendzhik"},
-    {"id": 5, "title": "Москва", "name": "moscow"},
-    {"id": 6, "title": "Казань", "name": "kazan"},
-    {"id": 7, "title": "Санкт-Петербург", "name": "spb"},
-]
-
-
-
 @router.get("/", summary='Получить список отелей')
 async def get_hotels(
         pagination: PaginationDep,
-        id: int | None = Query(None, description="Hotel ID"),
+        location: str | None = Query(None, description="Hotel Location"),
         title: str | None = Query(None, description="Hotel Name"),
 ):
-    hotels_ = []
-    for hotel in hotels:
-        if id and hotel["id"] != id:
-            continue
-        if title and hotel["title"] != title:
-            continue
-        hotels_.append(hotel)
-    if pagination.page and pagination.per_page:
-        return hotels_[pagination.per_page * (pagination.page - 1):][:pagination.per_page]
-    return hotels_
+    per_page = pagination.per_page or 5
+    async with async_session_maker() as session:
+        query = select(HotelsORM)
+        if location:
+            query = query.filter(HotelsORM.location.ilike(f'%{location.lower()}%'))
+        if title:
+            query = query.filter(HotelsORM.title.ilike(f'%{title.lower()}%'))
+        query = (
+            query
+            .limit(per_page)
+            .offset(per_page * (pagination.page - 1))
+        )
+
+        res = await session.execute(query)
+        return res.scalars().all()
 
 @router.delete("/{hotel_id}", summary='Удалить отель')
 async def delete_hotel(
@@ -52,12 +45,12 @@ async def delete_hotel(
 async def create_hotel(
         hotel_data: Hotel = Body(openapi_examples={
             "1": {"summary": 'Сочи', "value": {
-            "title": "Отель Сочи",
-            "location": "sochi_u_morya"
+            "title": "Отель Сочи Elite",
+            "location": "Сочи, ул. Сочи, 1"
         }},
         "2": {"summary": 'Дубай', "value": {
-            "title": "Отель Дубай",
-            "location": "dubai"
+            "title": "Отель Дубай Delux",
+            "location": "Дубай, Шех 1"
         }}
 })
 ):
