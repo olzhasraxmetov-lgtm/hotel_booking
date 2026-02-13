@@ -30,8 +30,9 @@ async def get_hotels(
 async def delete_hotel(
         hotel_id: int
 ):
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel['id'] != hotel_id]
+    async with async_session_maker() as session:
+        await HotelsRepository(session).delete(id=hotel_id)
+        await session.commit()
     return {"success": "ok:"}
 
 
@@ -60,11 +61,10 @@ async def update_hotel(
         hotel_id: int,
         hotel_data: Hotel
 ):
-    global hotels
-    for hotel in hotels:
-        if hotel['id'] == hotel_id:
-            hotel["title"] = hotel_data.title
-            hotel["name"] = hotel_data.name
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(data=hotel_data, id=hotel_id)
+        await session.commit()
+
     return {"success": "ok:"}
 
 @router.patch("/{hotel_id}", summary='Частично обновить отель')
