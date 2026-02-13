@@ -8,8 +8,7 @@ class BaseRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-
-    async def get_all(self):
+    async def get_all(self, **kwargs):
         query = select(self.model)
         result = await self.session.execute(query)
         return result.scalars().all()
