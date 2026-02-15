@@ -1,11 +1,13 @@
 from src.repositories.base import BaseRepository
 from src.models.hotels import HotelsORM
 from sqlalchemy import insert, select, func
+from src.schemas.hotels import Hotel
 
 class HotelsRepository(BaseRepository):
     model = HotelsORM
+    schema = Hotel
 
-    async def get_all(self,location,title,limit,offset):
+    async def get_all1(self,location,title,limit,offset):
 
         query = select(HotelsORM)
         if location:
@@ -19,4 +21,4 @@ class HotelsRepository(BaseRepository):
         )
 
         res = await self.session.execute(query)
-        return res.scalars().all()
+        return [Hotel.model_validate(hotel) for hotel in res.scalars().all()]
