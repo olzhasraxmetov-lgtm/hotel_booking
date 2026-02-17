@@ -1,6 +1,4 @@
-
-
-from fastapi import APIRouter, Body, HTTPException, Response
+from fastapi import APIRouter, Body, HTTPException, Response, Request
 
 from src.database import async_session_maker
 from src.repositories.users import UsersRepository
@@ -43,6 +41,15 @@ async def login_user(
         if not AuthService().verify_password(data.password, user.hashed_password):
             raise HTTPException(status_code=401, detail='Пароль неверный')
 
-        access_token = AuthService().create_access_token(data={"sub": user.id})
+        access_token = AuthService().create_access_token(data={"user_id": user.id})
         response.set_cookie("access_token", access_token)
         return {"access_token": access_token}
+
+@router.get("/auth_only")
+async def logout(request: Request):
+    access_token = request.cookies.get("access_token", None)
+    data = AuthService().encode_auth_token(access_token)
+    user_id = data["user_id"]
+    async with async_session_maker() as session:
+        user = await UsersRepository(session).get_one_or_none(id=user_id)
+        return user
