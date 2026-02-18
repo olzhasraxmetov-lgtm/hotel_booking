@@ -33,7 +33,7 @@ async def delete_hotel(
         db: DBDep
 ):
     await db.hotels.delete(id=hotel_id)
-    await db.hotels.commit()
+    await db.commit()
     return {"success": "ok:"}
 
 @router.post("", summary='Создать новый отель',tags=["Отели"])
@@ -51,7 +51,7 @@ async def create_hotel(
 }),
 ):
     hotel = await db.hotels.add(hotel_data)
-    await db.hotels.commit()
+    await db.commit()
 
     return {"success": "ok:", "data": hotel}
 
@@ -62,7 +62,7 @@ async def update_hotel(
         hotel_data: HotelCreate
 ):
     await db.hotels.edit(data=hotel_data, id=hotel_id)
-    await db.hotels.commit()
+    await db.commit()
 
     return {"success": "ok:"}
 
@@ -73,7 +73,7 @@ async def update_hotel_partially(
         hotel_data: HotelPATCH
 ):
     await db.hotels.edit(data=hotel_data, exclude_unset=True, id=hotel_id)
-    await db.hotels.commit()
+    await db.commit()
 
     return {"success": "ok:"}
 

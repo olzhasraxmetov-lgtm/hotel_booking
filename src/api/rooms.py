@@ -21,7 +21,7 @@ async def get_room(
 async def create_room(hotel_id: int, db: DBDep, payload: RoomAddRequest = Body(...)):
     _room_data = RoomsAdd(hotel_id=hotel_id,**payload.model_dump())
     room = await db.rooms.add(_room_data)
-    await db.rooms
+    await db.commit()
     return {"status": "ok", "data": room}
 
 @router.delete("/{room_id}", tags=["Номера"])
@@ -31,7 +31,7 @@ async def delete_room(
         db: DBDep
 ):
     await db.rooms.delete(id=room_id, hotel_id=hotel_id)
-    await db.rooms.commit()
+    await db.commit()
     return {"status": "ok:"}
 
 @router.put("/{room_id}", tags=["Номера"])
@@ -43,7 +43,7 @@ async def update_room(
 ):
     _room_data = RoomsAdd(hotel_id=hotel_id, **payload.model_dump())
     await db.rooms.edit(data=_room_data, id=room_id)
-    await db.rooms.commit()
+    await db.commit()
     return {"status": "ok:"}
 
 @router.patch("/{room_id}", tags=["Номера"])
@@ -55,5 +55,5 @@ async def partially_update_room(
 ):
     _room_data = RoomsPATCH(hotel_id=hotel_id, **payload.model_dump(exclude_unset=True))
     await db.rooms.edit(data=_room_data, hotel_id=hotel_id, id=room_id, exclude_unset=True)
-    await db.rooms.commit()
+    await db.commit()
     return {"status": "ok:"}

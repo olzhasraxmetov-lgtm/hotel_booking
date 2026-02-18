@@ -22,7 +22,7 @@ async def login(
     hashed_password = AuthService().hash_password(data.password)
     new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
     await db.users.add(new_user_data)
-    await db.users.commit()
+    await db.commit()
 
     return {"status": "success"}
 
