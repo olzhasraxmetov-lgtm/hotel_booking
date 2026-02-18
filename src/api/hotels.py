@@ -4,12 +4,10 @@ from src.api.dependencies import PaginationDep
 from src.database import async_session_maker
 from src.schemas.hotels import HotelCreate
 from src.repositories.hotels import HotelsRepository
-router = APIRouter(
-    prefix="/hotels",
-    tags=["Отели"]
-)
+from src.api.rooms import router as hotels_router
+router = APIRouter(prefix="/hotels")
 
-@router.get("/", summary='Получить список отелей')
+@router.get("/", summary='Получить список отелей', tags=["Отели"])
 async def get_hotels(
         pagination: PaginationDep,
         location: str | None = Query(None, description="Hotel Location"),
@@ -24,13 +22,13 @@ async def get_hotels(
             offset=per_page * (pagination.page - 1)
         )
 
-@router.get('/{hotel_id}', summary='Получить один отель')
+@router.get('/{hotel_id}', summary='Получить один отель',tags=["Отели"])
 async def get_hotel(hotel_id: int):
     async with async_session_maker() as session:
         return await HotelsRepository(session).get_one_or_none(id=hotel_id)
 
 
-@router.delete("/{hotel_id}", summary='Удалить отель')
+@router.delete("/{hotel_id}", summary='Удалить отель',tags=["Отели"])
 async def delete_hotel(
         hotel_id: int
 ):
@@ -41,7 +39,7 @@ async def delete_hotel(
 
 
 
-@router.post("", summary='Создать новый отель')
+@router.post("", summary='Создать новый отель',tags=["Отели"])
 async def create_hotel(
         hotel_data: HotelCreate = Body(openapi_examples={
             "1": {"summary": 'Сочи', "value": {
@@ -60,7 +58,7 @@ async def create_hotel(
 
     return {"success": "ok:", "data": hotel}
 
-@router.put("/{hotel_id}", summary='Полностью обновить отель')
+@router.put("/{hotel_id}", summary='Полностью обновить отель',tags=["Отели"])
 async def update_hotel(
         hotel_id: int,
         hotel_data: HotelCreate
@@ -71,7 +69,7 @@ async def update_hotel(
 
     return {"success": "ok:"}
 
-@router.patch("/{hotel_id}", summary='Частично обновить отель')
+@router.patch("/{hotel_id}", summary='Частично обновить отель',tags=["Отели"])
 async def update_hotel_partially(
         hotel_id: int,
         hotel_data: HotelPATCH
@@ -81,3 +79,5 @@ async def update_hotel_partially(
         await session.commit()
 
     return {"success": "ok:"}
+
+router.include_router(hotels_router)
