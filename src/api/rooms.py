@@ -53,8 +53,11 @@ async def update_room(
         payload: RoomAddRequest = Body(...)
 ):
     _room_data = RoomsAdd(hotel_id=hotel_id, **payload.model_dump())
-    await db.rooms.edit(data=_room_data, id=room_id)
+
+    await db.rooms.edit(_room_data, id=room_id)
+    await db.rooms_facilities.set_room_facilities(room_id=room_id, facilities_ids=payload.facilities_ids)
     await db.commit()
+
     return {"status": "ok:"}
 
 @router.patch("/{room_id}", tags=["Номера"])
@@ -64,7 +67,11 @@ async def partially_update_room(
         db: DBDep,
         payload: RoomsPatchRequest
 ):
-    _room_data = RoomsPATCH(hotel_id=hotel_id, **payload.model_dump(exclude_unset=True))
+    _room_data_dict = payload.model_dump(exclude_unset=True)
+    _room_data = RoomsPATCH(hotel_id=hotel_id, **_room_data_dict)
     await db.rooms.edit(data=_room_data, hotel_id=hotel_id, id=room_id, exclude_unset=True)
+
+    if "facilities_ids" in _room_data_dict:
+        await db.rooms_facilities.set_room_facilities(room_id=room_id, facilities_ids=_room_data_dict['facilities_ids'])
     await db.commit()
     return {"status": "ok:"}
