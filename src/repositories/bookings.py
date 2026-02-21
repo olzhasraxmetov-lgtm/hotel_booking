@@ -1,8 +1,8 @@
-from src.repositories.base import BaseRepository
 from src.models.bookings import BookingsORM
-from src.schemas.bookings import Booking
+from src.repositories.base import BaseRepository
+from src.repositories.mappers.mapppers import BookingDataMapper
 
 
 class BookingsRepository(BaseRepository):
     model = BookingsORM
-    schema = Booking
+    mapper = BookingDataMapper
