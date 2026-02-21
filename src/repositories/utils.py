@@ -36,10 +36,7 @@ def rooms_ids_for_booking(
     )
 
     if hotel_id is not None:
-        rooms_ids_for_hotel = (
-            rooms_ids_for_hotel
-            .filter_by()
-        )
+        rooms_ids_for_hotel = rooms_ids_for_hotel.filter_by(hotel_id=hotel_id)
 
     rooms_ids_for_hotel = (
         rooms_ids_for_hotel
