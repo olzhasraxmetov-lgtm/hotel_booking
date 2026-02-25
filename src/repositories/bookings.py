@@ -1,9 +1,16 @@
 from datetime import date
 
+from sqlalchemy.orm import selectinload
+
+from src.models import RoomsORM
 from src.models.bookings import BookingsORM
 from src.repositories.base import BaseRepository
-from src.repositories.mappers.mapppers import BookingDataMapper
-from sqlalchemy import select
+from src.repositories.mappers.mapppers import BookingDataMapper, RoomDataWithRelsMapper
+from sqlalchemy import select, func
+
+from src.repositories.utils import rooms_ids_for_booking
+from src.schemas.bookings import Booking, BookingAdd
+
 
 class BookingsRepository(BaseRepository):
     model = BookingsORM
@@ -17,3 +24,29 @@ class BookingsRepository(BaseRepository):
         )
         result = await self.session.execute(query)
         return [self.mapper.map_to_domain_entity(booking) for booking in result.scalars().all()]
+
+    async def add_booking(self, date_to, date_from, hotel_id):
+
+        rooms_ids_to_get = rooms_ids_for_booking(date_from, date_to, hotel_id)
+
+        query = (
+            select(RoomsORM)
+            .options(selectinload(RoomsORM.facilities))
+            .filter(RoomsORM.id.in_(rooms_ids_to_get))
+        )
+        result = await self.session.execute(query)
+        return [RoomDataWithRelsMapper.map_to_domain_entity(model) for model in result.scalars().all()]
+
+    async def add_booking(self, data: BookingAdd, hotel_id: int):
+        rooms_ids_to_get = rooms_ids_for_booking(
+            date_from=data.date_from,
+            date_to=data.date_to,
+            hotel_id=hotel_id
+        )
+        rooms_ids_to_book_res = await self.session.execute(rooms_ids_to_get)
+        rooms_ids_to_book = rooms_ids_to_book_res.scalars().all()
+        if data.room_id in rooms_ids_to_book:
+            new_booking = await self.add(data)
+            return new_booking
+        else:
+            raise Exception
