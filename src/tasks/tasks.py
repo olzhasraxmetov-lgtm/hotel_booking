@@ -19,7 +19,7 @@ INPUT_IMAGE = "input.jpg"
 
 SIZES = [1000, 500, 200]
 
-@celery_instance.task
+# @celery_instance.task
 def resize_and_save_images(
     input_image_path: str,
     output_dir: str = "src/static/images",
@@ -54,7 +54,6 @@ def resize_and_save_images(
 
 
 async def get_bookings_with_today_checkin_helper():
-    print('im ready')
     async with DBManager(session_factory=async_session_maker_null_poll) as db:
         bookings = await db.bookings.get_bookings_today_with_check_in()
         print(bookings)
