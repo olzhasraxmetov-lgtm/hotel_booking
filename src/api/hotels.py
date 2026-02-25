@@ -9,8 +9,8 @@ from src.schemas.hotels import HotelPATCH
 
 router = APIRouter(prefix="/hotels")
 
-@router.get("/", summary='Получить список отелей', tags=["Отели"])
-@cache(expire=10)
+@router.get("", summary='Получить список отелей', tags=["Отели"])
+# @cache(expire=10)
 async def get_hotels(
         pagination: PaginationDep,
         db: DBDep,
