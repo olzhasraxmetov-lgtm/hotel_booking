@@ -8,16 +8,16 @@ from src.tasks.tasks import test_task
 router = APIRouter(prefix="/facilities", tags=["Удобства"])
 
 
-
-@router.get('')
+@router.get("")
 @cache(expire=10)
 async def get_facilities(db: DBDep):
     return await db.facilities.get_all()
 
-@router.post('')
+
+@router.post("")
 async def create_facility(
-        db: DBDep,
-        data: FacilityCreate = Body(),
+    db: DBDep,
+    data: FacilityCreate = Body(),
 ):
     facility = await db.facilities.add(data)
     await db.commit()

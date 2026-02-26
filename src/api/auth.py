@@ -11,13 +11,18 @@ router = APIRouter(prefix="/auth", tags=["Авторизация и аутент
 
 @router.post("/register")
 async def login(
-        db: DBDep,
-        data: UserRequestCreate = Body(openapi_examples={
-            "1": {"summary": "Пользователь olzhas", "value": {
-                "email": "olzhas@gmail.com",
-                "password": "easypassword",
-            }},
-        })
+    db: DBDep,
+    data: UserRequestCreate = Body(
+        openapi_examples={
+            "1": {
+                "summary": "Пользователь olzhas",
+                "value": {
+                    "email": "olzhas@gmail.com",
+                    "password": "easypassword",
+                },
+            },
+        }
+    ),
 ):
     try:
         hashed_password = AuthService().hash_password(data.password)
@@ -29,20 +34,15 @@ async def login(
         raise HTTPException(status_code=401)
 
 
-
 @router.post("/login")
-async def login_user(
-        db: DBDep,
-        data: UserRequestCreate,
-        response: Response
-):
+async def login_user(db: DBDep, data: UserRequestCreate, response: Response):
     async with async_session_maker():
         user = await db.users.get_user_with_hashed_password(email=data.email)
         if not user:
-            raise HTTPException(status_code=401, detail='Пользователь с таким email не существует')
+            raise HTTPException(status_code=401, detail="Пользователь с таким email не существует")
 
         if not AuthService().verify_password(data.password, user.hashed_password):
-            raise HTTPException(status_code=401, detail='Пароль неверный')
+            raise HTTPException(status_code=401, detail="Пароль неверный")
 
         access_token = AuthService().create_access_token(data={"user_id": user.id})
         response.set_cookie("access_token", access_token)
@@ -57,5 +57,5 @@ async def get_me(db: DBDep, user_id: UserIdDep = Depends):
 
 @router.post("/logout")
 async def logout(response: Response):
-        response.delete_cookie("access_token")
-        return {"status": "success"}
+    response.delete_cookie("access_token")
+    return {"status": "success"}

@@ -8,16 +8,17 @@ from sqlalchemy import ForeignKey
 if typing.TYPE_CHECKING:
     from src.models import FacilitiesORM
 
+
 class RoomsORM(Base):
-    __tablename__ = 'rooms'
+    __tablename__ = "rooms"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey('hotels.id'))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     title: Mapped[str]
     description: Mapped[str | None]
     price: Mapped[int]
     quantity: Mapped[int]
-    facilities: Mapped[list['FacilitiesORM']] = relationship(
-        back_populates='rooms',
-        secondary='rooms_facilities',
+    facilities: Mapped[list["FacilitiesORM"]] = relationship(
+        back_populates="rooms",
+        secondary="rooms_facilities",
     )

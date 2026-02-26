@@ -7,10 +7,10 @@ from sqlalchemy import select
 from src.repositories.mappers.mapppers import UserDataMapper
 from src.schemas.users import UserWithHashedPassword
 
+
 class UsersRepository(BaseRepository):
     model = UsersORM
     mapper = UserDataMapper
-
 
     async def get_user_with_hashed_password(self, email: EmailStr):
         query = select(self.model).filter_by(email=email)

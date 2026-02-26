@@ -15,21 +15,26 @@ class HotelDataMapper(DataMapper):
     db_model = HotelsORM
     schema = Hotel
 
+
 class RoomDataMapper(DataMapper):
     db_model = RoomsORM
     schema = Room
+
 
 class RoomDataWithRelsMapper(DataMapper):
     db_model = RoomsORM
     schema = RoomWithRel
 
+
 class UserDataMapper(DataMapper):
     db_model = UsersORM
     schema = User
 
+
 class BookingDataMapper(DataMapper):
     db_model = BookingsORM
     schema = Booking
+
 
 class FacilityDataMapper(DataMapper):
     db_model = FacilitiesORM

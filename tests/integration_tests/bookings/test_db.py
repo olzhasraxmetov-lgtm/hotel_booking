@@ -23,7 +23,6 @@ async def test_add_booking_crud(db):
     assert booking_db_data.user_id == user_id
     assert booking_db_data.room_id == room_id
 
-
     booking_data_to_update = BookingAdd(
         price=2300,
         user_id=user_id,
@@ -36,7 +35,6 @@ async def test_add_booking_crud(db):
     booking_db_data_updated = await db.bookings.get_one_or_none(id=booking_db_data.id)
     assert booking_db_data_updated.user_id == user_id
     assert booking_db_data_updated.date_to == booking_data_to_update.date_to
-
 
     await db.bookings.delete(id=booking_db_data.id)
     deleted_data = await db.bookings.get_one_or_none(id=booking_db_data.id)

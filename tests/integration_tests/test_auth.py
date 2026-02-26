@@ -10,4 +10,4 @@ def test_decode_and_encode_access_token():
 
     payload = AuthService().encode_auth_token(jwt_token)
     assert payload
-    assert payload['user_id'] == data['user_id']
+    assert payload["user_id"] == data["user_id"]

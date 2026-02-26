@@ -4,7 +4,7 @@ from sqlalchemy import String
 
 
 class HotelsORM(Base):
-    __tablename__ = 'hotels'
+    __tablename__ = "hotels"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(100))

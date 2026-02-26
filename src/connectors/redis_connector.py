@@ -7,7 +7,6 @@ class RedisConnector:
         self.port = port
         self.redis = None
 
-
     async def connect(self):
         self.redis = await redis.Redis(host=self.host, port=self.port)
 
