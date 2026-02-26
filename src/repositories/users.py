@@ -2,10 +2,10 @@ from pydantic import EmailStr
 
 from src.repositories.base import BaseRepository
 from src.models.users import UsersORM
-from sqlalchemy import insert, select, func
+from sqlalchemy import select
 
 from src.repositories.mappers.mapppers import UserDataMapper
-from src.schemas.users import User, UserWithHashedPassword
+from src.schemas.users import UserWithHashedPassword
 
 class UsersRepository(BaseRepository):
     model = UsersORM

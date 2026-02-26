@@ -5,7 +5,7 @@ from src.models.rooms import RoomsORM
 from src.models.users import UsersORM
 from src.repositories.mappers.base import DataMapper
 from src.schemas.bookings import Booking
-from src.schemas.facilities import RoomFacility, FacilityResponse
+from src.schemas.facilities import FacilityResponse
 from src.schemas.hotels import Hotel
 from src.schemas.rooms import Room, RoomWithRel
 from src.schemas.users import User

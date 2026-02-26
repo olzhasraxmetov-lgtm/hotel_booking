@@ -19,12 +19,15 @@ async def login(
             }},
         })
 ):
-    hashed_password = AuthService().hash_password(data.password)
-    new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
-    await db.users.add(new_user_data)
-    await db.commit()
+    try:
+        hashed_password = AuthService().hash_password(data.password)
+        new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
+        await db.users.add(new_user_data)
+        await db.commit()
+        return {"status": "success"}
+    except Exception:
+        raise HTTPException(status_code=401)
 
-    return {"status": "success"}
 
 
 @router.post("/login")
@@ -33,7 +36,7 @@ async def login_user(
         data: UserRequestCreate,
         response: Response
 ):
-    async with async_session_maker() as session:
+    async with async_session_maker():
         user = await db.users.get_user_with_hashed_password(email=data.email)
         if not user:
             raise HTTPException(status_code=401, detail='Пользователь с таким email не существует')
