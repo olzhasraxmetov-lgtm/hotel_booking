@@ -1,5 +1,6 @@
 from datetime import date
 
+from fastapi import HTTPException
 from sqlalchemy.orm import selectinload
 
 from src.models import RoomsORM
@@ -25,18 +26,6 @@ class BookingsRepository(BaseRepository):
         result = await self.session.execute(query)
         return [self.mapper.map_to_domain_entity(booking) for booking in result.scalars().all()]
 
-    async def add_booking(self, date_to, date_from, hotel_id):
-
-        rooms_ids_to_get = rooms_ids_for_booking(date_from, date_to, hotel_id)
-
-        query = (
-            select(RoomsORM)
-            .options(selectinload(RoomsORM.facilities))
-            .filter(RoomsORM.id.in_(rooms_ids_to_get))
-        )
-        result = await self.session.execute(query)
-        return [RoomDataWithRelsMapper.map_to_domain_entity(model) for model in result.scalars().all()]
-
     async def add_booking(self, data: BookingAdd, hotel_id: int):
         rooms_ids_to_get = rooms_ids_for_booking(
             date_from=data.date_from,
@@ -49,4 +38,4 @@ class BookingsRepository(BaseRepository):
             new_booking = await self.add(data)
             return new_booking
         else:
-            raise Exception
+            raise HTTPException(status_code=500, detail="Room not found")
