@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, HTTPException, Response, Depends
 
 from src.api.dependencies import UserIdDep, DBDep
 from src.database import async_session_maker
+from src.exceptions.exceptions import ObjectAlreadyExistException
 from src.schemas.users import UserCreate
 from src.schemas.users import UserRequestCreate
 from src.services.auth import AuthService
@@ -24,14 +25,15 @@ async def login(
         }
     ),
 ):
+
+    hashed_password = AuthService().hash_password(data.password)
+    new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
     try:
-        hashed_password = AuthService().hash_password(data.password)
-        new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
         await db.users.add(new_user_data)
         await db.commit()
-        return {"status": "success"}
-    except Exception:
-        raise HTTPException(status_code=401)
+    except ObjectAlreadyExistException:
+        raise HTTPException(status_code=409, detail='Пользователь с таким email уже существует')
+    return {"status": "success"}
 
 
 @router.post("/login")
