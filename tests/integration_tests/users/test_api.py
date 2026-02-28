@@ -6,7 +6,7 @@ import pytest
     [
         ("rakhmetov@gmail.com", "12345", 200),
         ("someoneelse@gmail.com", "else1231", 200),
-        ("rakhmetov@gmail.com", "123123123", 401),
+        ("rakhmetov@gmail.com", "123123123", 409),
         ("neew_user@gmail.com", "else1231", 200),
         ("abcde", "else1231", 422),
     ],
