@@ -1,3 +1,4 @@
+import logging
 from typing import Sequence
 
 from pydantic import BaseModel
@@ -5,7 +6,7 @@ from sqlalchemy import select, insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from asyncpg.exceptions import UniqueViolationError
-from src.exceptions.exceptions import ObjectNotFoundException   , ObjectAlreadyExistException
+from src.exceptions.exceptions import ObjectNotFoundException, ObjectAlreadyExistException
 from src.repositories.mappers.base import DataMapper
 
 
@@ -49,9 +50,13 @@ class BaseRepository:
             model = result.scalars().one()
             return self.mapper.map_to_domain_entity(model)
         except IntegrityError as ex:
+            logging.exception(
+                f"Не удалось добавить данные в базу данных, входные данные={data}"
+            )
             if isinstance(ex.orig.__cause__, UniqueViolationError):
                 raise ObjectAlreadyExistException from ex
             else:
+                logging.exception(f"Не знакомая ошибка, входные данные={data}")
                 raise ex
 
     async def add_bulk(self, data: Sequence[BaseModel]):

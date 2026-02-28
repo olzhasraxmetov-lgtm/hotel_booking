@@ -70,9 +70,7 @@ async def setup_test_data(setup_database):
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient]:
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
 

@@ -35,13 +35,13 @@ async def get_hotels(
     )
 
 
-
 @router.get("/{hotel_id}", summary="Получить один отель", tags=["Отели"])
 async def get_hotel(hotel_id: int, db: DBDep):
     try:
         return await db.hotels.get_one(id=hotel_id)
     except ObjectNotFoundException:
         raise HotelNotFoundHTTPException
+
 
 @router.delete("/{hotel_id}", summary="Удалить отель", tags=["Отели"])
 async def delete_hotel(hotel_id: int, db: DBDep):

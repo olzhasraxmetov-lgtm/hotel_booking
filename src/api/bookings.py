@@ -37,7 +37,7 @@ async def create_booking(
     try:
         bookings = await db.bookings.add_booking(_booking_data, hotel_id=hotel.id)
     except AllRoomsAreBookedException as ex:
-        raise HTTPException(status_code=409 ,detail=ex.detail)
+        raise HTTPException(status_code=409, detail=ex.detail)
 
     await db.commit()
 

@@ -1,4 +1,6 @@
 import asyncio
+import logging
+
 from time import sleep
 import os
 from PIL import Image
@@ -28,7 +30,7 @@ def resize_and_save_images(
     sizes: list[int] = [10000, 100000, 1000],
     quality: int = 85,
 ) -> None:
-
+    logging.debug(f"Вызов функций с параметрами: {input_image_path}")
     os.makedirs(output_dir, exist_ok=True)
 
     filename, _ = os.path.splitext(os.path.basename(input_image_path))
@@ -44,13 +46,13 @@ def resize_and_save_images(
 
             resized.save(output_path, format="JPEG", quality=quality, optimize=True)
 
-            print(f"Сохранено: {output_path}")
+            logging.info(f"Сохранено: {output_path}")
 
 
 async def get_bookings_with_today_checkin_helper():
     async with DBManager(session_factory=async_session_maker_null_poll) as db:
         bookings = await db.bookings.get_bookings_today_with_check_in()
-        print(bookings)
+        logging.debug(bookings)
 
 
 @celery_instance.task(name="booking_today_check_in")

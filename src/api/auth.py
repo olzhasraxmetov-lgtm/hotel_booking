@@ -32,7 +32,7 @@ async def login(
         await db.users.add(new_user_data)
         await db.commit()
     except ObjectAlreadyExistException:
-        raise HTTPException(status_code=409, detail='Пользователь с таким email уже существует')
+        raise HTTPException(status_code=409, detail="Пользователь с таким email уже существует")
     return {"status": "success"}
 
 
