@@ -4,7 +4,10 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-
+import sys
+from pathlib import Path
+root_path = Path(__file__).parent.parent.parent
+sys.path.append(str(root_path))
 from src.config import settings
 from src.database import Base
 from src.models import *  # noqa
