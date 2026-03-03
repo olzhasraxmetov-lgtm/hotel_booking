@@ -4,7 +4,6 @@ from fastapi_cache.decorator import cache
 from src.api.dependencies import DBDep
 from src.schemas.facilities import FacilityCreate
 from src.services.facilities import FacilitiesService
-from src.tasks.tasks import test_task
 
 router = APIRouter(prefix="/facilities", tags=["Удобства"])
 

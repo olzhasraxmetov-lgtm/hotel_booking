@@ -28,6 +28,8 @@ services:
     container_name: 'booking_back'
     build:
       context: .
+    volumes:
+      - .:/app
     ports:
       - "2030:8000"
     networks:
@@ -37,11 +39,16 @@ services:
     depends_on:
       - booking_db
       - booking_cache
+    command: >
+      sh -c "alembic upgrade head && 
+             uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
 
   booking_celery_worker_service:
     container_name: 'booking_celery_worker'
     build:
       context: .
+    volumes:
+      - .:/app
     networks:
       - myNetwork
     env_file:
@@ -55,6 +62,8 @@ services:
     container_name: 'booking_celery_beat'
     build:
       context: .
+    volumes:
+      - .:/app
     networks:
       - myNetwork
     env_file:
